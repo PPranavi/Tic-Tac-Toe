@@ -1,7 +1,10 @@
 import React from 'react';
 import './App.css';
 import { SquareState } from './Square.js';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import io from 'socket.io-client';
+
+const socket = io(); // Connects to socket connection
 
 export function BoardState() {
     const [board, setBoard] = useState(Array(9).fill(""));
@@ -9,15 +12,37 @@ export function BoardState() {
     
     function clickHandler(i) {
         const tempBoard = [...board];
-        
-        if (Xnext)
+        var message = "X";
+        if (Xnext) {
             tempBoard[i] = "X";
-        else
+            message = "X";
+        }
+        else {
             tempBoard[i] = "O";
+            message = "O"
+        }
+            
         Onext(!Xnext);
         
         setBoard(tempBoard);
+        socket.emit('display', { board:board, message: message, i:i });
     }
+    
+    useEffect(() => {
+        // Listening for a chat event emitted by the server. If received, we
+        // run the code in the function that is passed in as the second arg
+        socket.on('display', (data) => {
+            console.log('Chat event received!');
+            console.log(data);
+            // If the server sends a message (on behalf of another client), then we
+            // add it to the list of messages to render it on the UI.
+            const tempBoard = [...data.board];
+            const message = data.message;
+            tempBoard[data.i] = data.message;
+            setBoard(tempBoard);
+            //setMessages(prevMessages => [...prevMessages, data.message]);
+        });
+    }, []);
     
     return (
         <div>
