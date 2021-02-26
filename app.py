@@ -7,6 +7,8 @@ app = Flask(__name__, static_folder='./build/static')
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
+current_users = []
+
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
@@ -25,6 +27,12 @@ def on_display(data): # data is whatever arg you pass in your emit call on clien
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('display', data, broadcast=True, include_self=False)
+    
+@socketio.on('login')
+def on_login(data): # data is whatever arg you pass in your emit call on client
+    print(str(data))
+    current_users.append(data['user'])
+    socketio.emit('login', data, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
