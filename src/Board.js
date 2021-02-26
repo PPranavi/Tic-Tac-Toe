@@ -94,7 +94,7 @@ export function BoardState() {
     
     return (
         <div>
-            <h1>Tic Tac Toe</h1>
+            <h2>Tic Tac Toe</h2>
             <div class="board">
                 {board.map((symbol, i) => (
                     <SquareState symbol={symbol} onClick={() => clickHandler(i)} />
@@ -102,6 +102,7 @@ export function BoardState() {
             </div>
             <div>
                 <p>{winner ? restartGame() : ''}</p>
+                <p>{winner ? 'Winner: Player ' + winner : ''}</p>
             </div>
         </div>
     );

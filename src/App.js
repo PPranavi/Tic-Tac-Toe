@@ -11,6 +11,7 @@ function App() {
   const [userList, setUserList] = useState([]);
   const [username, setUsername] = useState("");
   const usernameRef = useRef(null);
+  const [showBoard, updateShowBoard] = useState(false);
   
   useEffect(() => {
     // Listening for a chat event emitted by the server. If received, we
@@ -26,16 +27,17 @@ function App() {
       setUsername(user);
       setUserList((prevUserList) => [...prevUserList, user]);
       socket.emit('login', { user: user });
+      updateShowBoard(true);
     }
   }
   
   return (
     <div>
-      <h3>All Users (History)</h3>
+      <h1>Welcome</h1>
       Enter username here: <input ref = { usernameRef } type="text" />
       <button onClick={onSetUsername}>Login</button>
       {userList.map((user, index) => <ListItem key={index} name={user} />)}
-      {usernameRef!=null ? <BoardState/> : ''}
+      {showBoard==true ? <BoardState/> : ''}
     </div>
     
   );
