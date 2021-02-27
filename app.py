@@ -8,6 +8,7 @@ app = Flask(__name__, static_folder='./build/static')
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 current_users = []
+status = {"Player X": '', "Player O":'', "Spectators":[]}
 
 socketio = SocketIO(
     app,
@@ -30,9 +31,27 @@ def on_display(data): # data is whatever arg you pass in your emit call on clien
     
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
-    print(str(data))
+    global current_users
     current_users.append(data['user'])
+    if len(current_users)==1:
+        status["Player X"]=data['user']
+    elif len(current_users)==2:
+        status["Player O"]=data['user']
+    else:
+        status["Spectators"].append(data['user'])
+    
+    print(status)
     socketio.emit('login', data, broadcast=True, include_self=False)
+
+@socketio.on('update')
+def update_players(data): # data is whatever arg you pass in your emit call on client
+    print(data)
+    socketio.emit('update', data, broadcast=True, include_self=False)
+
+#new code
+'''@socketio.on('restart')
+def reset_board(data): # data is whatever arg you pass in your emit call on client
+    socketio.emit('restart', data, broadcast=True, include_self=True)'''
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(

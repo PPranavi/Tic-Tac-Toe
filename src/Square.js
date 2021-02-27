@@ -3,10 +3,8 @@ import './App.css';
 
 export function SquareState(props) {
     return (
-    //<div class="box">
-    <button onClick={props.onClick}>
+    <button class='box' onClick={props.onClick}>
         {props.symbol}
     </button>
-    //</div>
-    );
+   );
 }

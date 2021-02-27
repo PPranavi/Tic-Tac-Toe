@@ -7,8 +7,26 @@
 }
 
 .box {
-  border: 1px solid black; /* Shows the lines in the CSS grid */
+  border: 1px solid black;  
 }
+/*.board {
+    width: 300px;
+    max-width: 300px;
+    height: 300px;
+    max-height: 300px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.box {
+    border: 1px solid black;
+    font-family: Helvetica;
+    font-size: 500%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}*/
 
 .App {
   text-align: center;

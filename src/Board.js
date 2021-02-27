@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection
 
-export function BoardState() {
+export function BoardState(props) {
     function claculateWinner(board) {
         const check = [
             [0,1,2],
@@ -43,53 +43,70 @@ export function BoardState() {
     
     function clickHandler(i) {
         const tempBoard = [...board];
+        let counter=0;
+        for (let a=0; a<9; a++) {
+            if (tempBoard[a])
+                counter++;
+        }
         
+        /*if (counter==0) 
+            Onext(true);*/
+        
+        console.log(counter);
         if (winner || tempBoard[i])
             return;
             
         var message = "X";
-        if (Xnext) {
+        if ( Xnext && props.username==props.players['X']) {
             tempBoard[i] = "X";
             message = "X";
+            Onext(!Xnext);
+            setBoard(tempBoard);
+            socket.emit('display', { board:board, message: message, i:i, Xnext:Xnext });
+            console.log(props.username);
+            return;
         }
-        else {
+        else if ( !Xnext && props.username==props.players['O']){
             tempBoard[i] = "O";
             message = "O";
+            Onext(!Xnext);
+            setBoard(tempBoard);
+            socket.emit('display', { board:board, message: message, i:i, Xnext:Xnext });
+            console.log(props.username);
+            return;
         }
-            
-        Onext(!Xnext);
         
-        setBoard(tempBoard);
-        socket.emit('display', { board:board, message: message, i:i, Xnext:Xnext });
     }
     
     useEffect(() => {
-        // Listening for a chat event emitted by the server. If received, we
-        // run the code in the function that is passed in as the second arg
         socket.on('display', (data) => {
-            //console.log('Chat event received!');
             console.log(data);
-            // If the server sends a message (on behalf of another client), then we
-            // add it to the list of messages to render it on the UI.
             const tempBoard = [...data.board];
             const message = data.message;
             tempBoard[data.i] = message;
             setBoard(tempBoard);
             Onext(!data.Xnext);
-            //setMessages(prevMessages => [...prevMessages, data.message]);
         });
+        
+        /*socket.on('restart', (data) => {
+            const tempBoard = [...data.board];
+            setBoard(tempBoard);
+            restartGame();
+        });*/
+        
     }, []);
     
     function restartGame() {
+        /*socket.emit('restart', { board:Array(9).fill(null)}); //new lines
+        if (winner==null)
+            document.getElementById('showRestartButton').style.display = 'none';*/
         return (
-            <button onClick={() => setBoard(Array(9).fill(null))}>
-                Restart Game
-            </button>
+            <div id='showRestartButton'>
+                <button onClick={() => setBoard(Array(9).fill(null))}>
+                    Restart Game
+                </button>
+            </div>
         );
-    }
-    
-    if (winner) {
-        restartGame();
     }
     
     return (
@@ -100,6 +117,7 @@ export function BoardState() {
                     <SquareState symbol={symbol} onClick={() => clickHandler(i)} />
                 ))}
             </div>
+            <div> Next Turn: Player {Xnext ? 'X' : 'O'} </div>
             <div>
                 <p>{winner ? restartGame() : ''}</p>
                 <p>{winner ? 'Winner: Player ' + winner : ''}</p>
@@ -107,3 +125,11 @@ export function BoardState() {
         </div>
     );
 }
+
+//<p>{winner ? socket.emit('restart', { board:Array(9).fill(null), Xnext:true}) : ''}</p>
+//<p>{winner ? restartGame() : ''}</p>
+/*<div id='showRestartButton'> 
+                    <button onClick={() => restartGame()}>
+                    Restart Game
+                    </button>
+                </div>*/
