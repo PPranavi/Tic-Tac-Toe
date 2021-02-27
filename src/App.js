@@ -57,17 +57,22 @@ function App() {
   }, []);
   
   return (
-    <div>
-      <h1>Welcome</h1>
+    <div class="background">
+    <h1>Tic Tac Toe!</h1>
       <div id='login'>
-        Enter username here: <input ref = { usernameRef } type="text" />
+        <h2>To begin, you must enter your username!</h2>
+        Enter your username: <input ref = { usernameRef } type="text" />
         <button onClick={onSetUsername}>Login</button>
       </div>
       <div>
-        {usernameRef==null ? 'No users in the game yet!' : 'Current user: ' +  username }
+        <div class='h2'>
+          {showBoard==true ? 'Current user: ' +  username : '' }
+          {userList.map((user, index) => <ListItem index={index} name={user} />)}
+        </div>
+        <div class="center">
+          {showBoard==true ? <BoardState username={username} players={players} /> : ''}
+        </div>
       </div>
-      {userList.map((user, index) => <ListItem index={index} name={user} />)}
-      {showBoard==true ? <BoardState username={username} players={players} /> : ''}
     </div>
     
   );

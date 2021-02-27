@@ -111,16 +111,15 @@ export function BoardState(props) {
     
     return (
         <div>
-            <h2>Tic Tac Toe</h2>
             <div class="board">
                 {board.map((symbol, i) => (
                     <SquareState symbol={symbol} onClick={() => clickHandler(i)} />
                 ))}
             </div>
-            <div> Next Turn: Player {Xnext ? 'X' : 'O'} </div>
+            <div class='h2'> Next Turn: Player {Xnext ? 'X' : 'O'} </div>
             <div>
+                <h1>{winner ? 'Winner: Player ' + winner + '!': ''}</h1>
                 <p>{winner ? restartGame() : ''}</p>
-                <p>{winner ? 'Winner: Player ' + winner : ''}</p>
             </div>
         </div>
     );
