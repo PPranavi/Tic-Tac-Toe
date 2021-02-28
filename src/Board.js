@@ -100,6 +100,9 @@ export function BoardState(props) {
         /*socket.emit('restart', { board:Array(9).fill(null)}); //new lines
         if (winner==null)
             document.getElementById('showRestartButton').style.display = 'none';*/
+        if (props.username!=props.players['X'] && props.username!=props.players['O']){
+            document.getElementById('restart').style.display = 'none';
+        }
         return (
             <div id='showRestartButton'>
                 <button onClick={() => setBoard(Array(9).fill(null))}>
@@ -119,7 +122,7 @@ export function BoardState(props) {
             <div class='h2'> Next Turn: Player {Xnext ? 'X' : 'O'} </div>
             <div>
                 <h1>{winner ? 'Winner: Player ' + winner + '!': ''}</h1>
-                <p>{winner ? restartGame() : ''}</p>
+                <p id='restart'>{winner ? restartGame() : ''}</p>
             </div>
         </div>
     );
