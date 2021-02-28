@@ -14,6 +14,7 @@ function App() {
   const [showBoard, updateShowBoard] = useState(false);
   const [players, setPlayers] = useState({ 'X':'', 'O':'', 'Spectators':[]});
   
+  //functionality to display board only after a user enters their username
   function onSetUsername () {
     if (usernameRef!=null) {
       const user = usernameRef.current.value;
@@ -29,6 +30,7 @@ function App() {
     }
   }
   
+  //functionality to update who player x, player o, and spectators are
   function updatePlayers(user){
     const tempDict = {...players};
     if (tempDict['X']=='') {
@@ -45,6 +47,7 @@ function App() {
     socket.emit('update', tempDict);
     }
   
+  //functionality to pass information to all other users who are viewing the same game
   useEffect(() => {
     socket.on('login', (data) => {
       setUserList(prevUserList => [...prevUserList, data.user]);

@@ -7,6 +7,7 @@ import io from 'socket.io-client';
 const socket = io(); // Connects to socket connection
 
 export function BoardState(props) {
+    //functionality to check for winner; references resource from project specs for this code block
     function claculateWinner(board) {
         const check = [
             [0,1,2],
@@ -41,6 +42,7 @@ export function BoardState(props) {
     const [Xnext, Onext] = useState(true);
     const winner = claculateWinner(board);
     
+    //functionality to update board only when player x or player o click on a square
     function clickHandler(i) {
         const tempBoard = [...board];
         let counter=0;
@@ -78,6 +80,7 @@ export function BoardState(props) {
         
     }
     
+    //functionality to send all board information to all users whoa re viewing the same game
     useEffect(() => {
         socket.on('display', (data) => {
             console.log(data);
@@ -96,6 +99,7 @@ export function BoardState(props) {
         
     }, []);
     
+    //functionality to restart the game when the button is clicked; makes sure that only player x and player o can see and ckick the button
     function restartGame() {
         /*socket.emit('restart', { board:Array(9).fill(null)}); //new lines
         if (winner==null)

@@ -28,7 +28,8 @@ def on_display(data): # data is whatever arg you pass in your emit call on clien
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('display', data, broadcast=True, include_self=False)
-    
+
+#used to pass and store all new information; will replace this code with database functionalities
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
     global current_users
@@ -43,6 +44,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     print(status)
     socketio.emit('login', data, broadcast=True, include_self=False)
 
+#used to update player information and pass this to all other users
 @socketio.on('update')
 def update_players(data): # data is whatever arg you pass in your emit call on client
     print(data)
