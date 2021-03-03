@@ -2,8 +2,22 @@ import os
 from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv, find_dotenv
 
 app = Flask(__name__, static_folder='./build/static')
+
+# Point SQLAlchemy to your Heroku database
+load_dotenv(find_dotenv())
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# Gets rid of a warning
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# IMPORTANT: This must be AFTER creating db variable to prevent
+# circular import issues
+from models import Person
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -51,13 +65,15 @@ def update_players(data): # data is whatever arg you pass in your emit call on c
     socketio.emit('update', data, broadcast=True, include_self=False)
 
 #new code
-'''@socketio.on('restart')
-def reset_board(data): # data is whatever arg you pass in your emit call on client
-    socketio.emit('restart', data, broadcast=True, include_self=True)'''
+#@socketio.on('restart')
+#def reset_board(data): # data is whatever arg you pass in your emit call on client
+    #socketio.emit('restart', data, broadcast=True, include_self=True)
 
-# Note that we don't call app.run anymore. We call socketio.run with app arg
-socketio.run(
-    app,
-    host=os.getenv('IP', '0.0.0.0'),
-    port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
-)
+# Note we need to add this line so we can import app in the python shell
+if __name__ == "__main__":
+    # Note that we don't call app.run anymore. We call socketio.run with app arg
+    socketio.run(
+        app,
+        host=os.getenv('IP', '0.0.0.0'),
+        port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
+    )
