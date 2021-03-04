@@ -91,17 +91,16 @@ export function BoardState(props) {
             Onext(!data.Xnext);
         });
         
-        /*socket.on('restart', (data) => {
-            const tempBoard = [...data.board];
-            setBoard(tempBoard);
-            restartGame();
-        });*/
+        socket.on('restart', (data) => {
+            setBoard(data.board);
+            //restartGame();
+        });
         
     }, []);
     
     //functionality to restart the game when the button is clicked; makes sure that only player x and player o can see and ckick the button
     function restartGame() {
-        /*socket.emit('restart', { board:Array(9).fill(null)}); //new lines
+       /*socket.emit('restart', { board:Array(9).fill(null)}); //new lines
         if (winner==null)
             document.getElementById('showRestartButton').style.display = 'none';*/
         if (props.username!=props.players['X'] && props.username!=props.players['O']){
@@ -109,11 +108,17 @@ export function BoardState(props) {
         }
         return (
             <div id='showRestartButton'>
-                <button onClick={() => setBoard(Array(9).fill(null))}>
+                <button onClick={() => restartButton()}>
                     Restart Game
                 </button>
             </div>
         );
+    }
+    
+    function restartButton() {
+        const tempBoard = Array(9).fill("");
+        setBoard(tempBoard);
+        socket.emit('restart', {board:tempBoard});
     }
     
     return (

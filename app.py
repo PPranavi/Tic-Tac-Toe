@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
-from models import Person
+#from models import Person
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -65,9 +65,9 @@ def update_players(data): # data is whatever arg you pass in your emit call on c
     socketio.emit('update', data, broadcast=True, include_self=False)
 
 #new code
-#@socketio.on('restart')
-#def reset_board(data): # data is whatever arg you pass in your emit call on client
-    #socketio.emit('restart', data, broadcast=True, include_self=True)
+@socketio.on('restart')
+def reset_board(data): # data is whatever arg you pass in your emit call on client
+    socketio.emit('restart', data, broadcast=True, include_self=True)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
