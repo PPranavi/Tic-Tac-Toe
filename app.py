@@ -12,12 +12,12 @@ load_dotenv(find_dotenv())
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 # Gets rid of a warning
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
 
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
-#from models import Person
+import models
+db.create_all()
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -36,6 +36,17 @@ socketio = SocketIO(
 def index(filename):
     return send_from_directory('./build', filename)
 
+# When a client connects from this Socket connection, this function is run
+@socketio.on('connect')
+def on_connect():
+    print('User connected!')
+    all_people = models.Person.query.all() # DB STUFF
+    users = [] # DB STUFF
+    for person in all_people: # DB STUFF
+        users.append(person.username) # DB STUFF
+    print(users) # DB STUFF
+    socketio.emit('start', {'users': users}) # DB STUFF
+    
 @socketio.on('display')
 def on_display(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
@@ -46,8 +57,17 @@ def on_display(data): # data is whatever arg you pass in your emit call on clien
 #used to pass and store all new information; will replace this code with database functionalities
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
-    global current_users
-    current_users.append(data['user'])
+    print(str(data))
+    new_user = models.Person(username=data['user'], email='{0}@stuff.com'.format(data['user']))
+    db.session.add(new_user)
+    db.session.commit()
+    all_people = models.Person.query.all()
+    users = []
+    for person in all_people:
+        users.append(person.username)
+    print(users)
+    socketio.emit('login', {'users': users, 'user': data['user']}, broadcast=True, include_self=True)
+    '''current_users.append(data['user'])
     if len(current_users)==1:
         status["Player X"]=data['user']
     elif len(current_users)==2:
@@ -56,7 +76,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         status["Spectators"].append(data['user'])
     
     print(status)
-    socketio.emit('login', data, broadcast=True, include_self=False)
+    socketio.emit('login', data, broadcast=True, include_self=False)'''
 
 #used to update player information and pass this to all other users
 @socketio.on('update')

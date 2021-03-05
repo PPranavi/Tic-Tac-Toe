@@ -3,6 +3,7 @@ import './App.css';
 import { BoardState, updatePlayers } from './Board.js';
 import { useState, useRef, useEffect } from 'react';
 import { ListItem } from './ListItem.js';
+import { WatchListItem } from './WatchListItem.js';
 import io from 'socket.io-client';
 
 const socket = io(); 
@@ -13,6 +14,8 @@ function App() {
   const usernameRef = useRef('');
   const [showBoard, updateShowBoard] = useState(false);
   const [players, setPlayers] = useState({ 'X':'', 'O':'', 'Spectators':[]});
+  const [showHide, setShowHide] = useState(false);
+  const [userHistoryList, setUserHistoryList] = useState([]);
   
   //functionality to display board only after a user enters their username
   function onSetUsername () {
@@ -21,8 +24,9 @@ function App() {
       setUsername(user);
       updateShowBoard(true);
       
-      setUserList(prevUserList => [...prevUserList, user]);
-      socket.emit('login', { user: user } );
+      //setUserList(prevUserList => [...prevUserList, user]);
+      socket.emit('login', { 'user': user } );
+      //setUserHistoryList(prevUserList => [...prevUserList, user]);
       updatePlayers(user);
       
       console.log(user);
@@ -45,12 +49,31 @@ function App() {
     setPlayers(tempDict);
     console.log(tempDict);
     socket.emit('update', tempDict);
-    }
+  }
+  
+  function onShowHide(){
+    setShowHide((prevShow) => {
+      return !prevShow;
+    });
+  }
+  
+  function displayLeaderboard() {
+    return (
+      <div>
+        {userHistoryList.map((user, index) => <ListItem key={index} name={user} />)}
+      </div>
+    );
+  }
   
   //functionality to pass information to all other users who are viewing the same game
   useEffect(() => {
+    socket.on('start', (data) => {
+      setUserHistoryList(data.users);
+    });
+    
     socket.on('login', (data) => {
       setUserList(prevUserList => [...prevUserList, data.user]);
+      setUserHistoryList(data.users);
     });
    
     socket.on('update', (data) => {
@@ -70,12 +93,16 @@ function App() {
       <div>
         <div class='h2'>
           {showBoard==true ? 'Current user: ' +  username : '' }
-          {userList.map((user, index) => <ListItem index={index} name={user} />)}
+          {userList.map((user, index) => <WatchListItem index={index} name={user} />)}
         </div>
         <div class="center">
           {showBoard==true ? <BoardState username={username} players={players} /> : ''}
         </div>
       </div>
+      <div>
+        <button onClick={() => onShowHide()}>Leaderboard</button>
+      </div>
+      {showHide === true ? displayLeaderboard() : null}
     </div>
     
   );
