@@ -15,7 +15,8 @@ function App() {
   const [showBoard, updateShowBoard] = useState(false);
   const [players, setPlayers] = useState({ 'X':'', 'O':'', 'Spectators':[]});
   const [showHide, setShowHide] = useState(false);
-  const [userHistoryList, setUserHistoryList] = useState([]);
+  const [userHistoryList, setUserHistoryList] = useState({});
+  //const [userRankList, setUserRankList] = useState([]);
   
   //functionality to display board only after a user enters their username
   function onSetUsername () {
@@ -60,20 +61,25 @@ function App() {
   function displayLeaderboard() {
     return (
       <div>
-        {userHistoryList.map((user, index) => <ListItem key={index} name={user} />)}
+        {userHistoryList.map((item, index) => <ListItem key={index} name={item} />)}
       </div>
     );
+    
   }
   
   //functionality to pass information to all other users who are viewing the same game
   useEffect(() => {
     socket.on('start', (data) => {
       setUserHistoryList(data.users);
+      //console.log(userHistoryList);
+      //console.log(userHistoryList['admin']);
+      //setUserRankList(data.ranks);
     });
     
     socket.on('login', (data) => {
       setUserList(prevUserList => [...prevUserList, data.user]);
       setUserHistoryList(data.users);
+      //setUserRankList(data.ranks);
     });
    
     socket.on('update', (data) => {

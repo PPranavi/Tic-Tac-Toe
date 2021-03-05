@@ -22,7 +22,6 @@ db.create_all()
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 current_users = []
-status = {"Player X": '', "Player O":'', "Spectators":[]}
 
 socketio = SocketIO(
     app,
@@ -39,13 +38,22 @@ def index(filename):
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
+    global current_users
+    current_users = []
     print('User connected!')
     all_people = models.Person.query.all() # DB STUFF
+    leaderboard = {}
     users = [] # DB STUFF
+    ranks = []
     for person in all_people: # DB STUFF
         users.append(person.username) # DB STUFF
-    print(users) # DB STUFF
-    socketio.emit('start', {'users': users}) # DB STUFF
+        ranks.append(person.rank)
+        #leaderboard[person.username] = person.rank
+    current_users = users
+    print("users: ", users) # DB STUFF
+    print("current_users: ", current_users)
+    #print('leader: ', leaderboard)
+    socketio.emit('start', {'users': users, 'ranks':ranks, 'leaderboard':leaderboard}) # DB STUFF
     
 @socketio.on('display')
 def on_display(data): # data is whatever arg you pass in your emit call on client
@@ -57,31 +65,33 @@ def on_display(data): # data is whatever arg you pass in your emit call on clien
 #used to pass and store all new information; will replace this code with database functionalities
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
+    global current_users
     print(str(data))
-    new_user = models.Person(username=data['user'], email='{0}@stuff.com'.format(data['user']))
-    db.session.add(new_user)
-    db.session.commit()
+    if data['user'] not in current_users:
+        print("user not in db")
+        new_user = models.Person(username=data['user'], rank=100)
+        db.session.add(new_user)
+        db.session.commit()
+        current_users.append(data['user'])
+    else:
+        print("user already in db")
     all_people = models.Person.query.all()
     users = []
+    ranks = []
+    leaderboard = {}
     for person in all_people:
         users.append(person.username)
-    print(users)
-    socketio.emit('login', {'users': users, 'user': data['user']}, broadcast=True, include_self=True)
-    '''current_users.append(data['user'])
-    if len(current_users)==1:
-        status["Player X"]=data['user']
-    elif len(current_users)==2:
-        status["Player O"]=data['user']
-    else:
-        status["Spectators"].append(data['user'])
-    
-    print(status)
-    socketio.emit('login', data, broadcast=True, include_self=False)'''
+        ranks.append(person.rank)
+        #leaderboard[person.username] = person.rank
+    print('users: ', users)
+    print('current_users: ', current_users)
+    print('leader: ', leaderboard)
+    socketio.emit('login', {'users': users, 'user': data['user'], 'ranks':ranks, 'leaderboard':leaderboard}, broadcast=True, include_self=True)
 
 #used to update player information and pass this to all other users
 @socketio.on('update')
 def update_players(data): # data is whatever arg you pass in your emit call on client
-    print(data)
+    print("dictionary: ", data)
     socketio.emit('update', data, broadcast=True, include_self=False)
 
 #new code
