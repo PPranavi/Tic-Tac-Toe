@@ -3,6 +3,7 @@ import './App.css';
 import { BoardState, updatePlayers } from './Board.js';
 import { useState, useRef, useEffect } from 'react';
 import { ListItem } from './ListItem.js';
+import { DisTable } from './DisplayTable.js';
 import { WatchListItem } from './WatchListItem.js';
 import io from 'socket.io-client';
 
@@ -15,8 +16,9 @@ function App() {
   const [showBoard, updateShowBoard] = useState(false);
   const [players, setPlayers] = useState({ 'X':'', 'O':'', 'Spectators':[]});
   const [showHide, setShowHide] = useState(false);
-  const [userHistoryList, setUserHistoryList] = useState({});
-  //const [userRankList, setUserRankList] = useState([]);
+  const [userHistoryList, setUserHistoryList] = useState([]);
+  const [userRankList, setUserRankList] = useState([]);
+  const [userHistoryDict, setUserHistoryDict] = useState([]);
   
   //functionality to display board only after a user enters their username
   function onSetUsername () {
@@ -59,32 +61,52 @@ function App() {
   }
   
   function displayLeaderboard() {
-    return (
+    /*return (
       <div>
         {userHistoryList.map((item, index) => <ListItem key={index} name={item} />)}
       </div>
+    );*/
+    return (
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">LeaderBoard</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userHistoryDict.map((item, index) => <DisTable key={index} player={item} />)}
+          </tbody>
+        </table>
+      </div>
     );
-    
   }
   
   //functionality to pass information to all other users who are viewing the same game
   useEffect(() => {
     socket.on('start', (data) => {
       setUserHistoryList(data.users);
-      //console.log(userHistoryList);
-      //console.log(userHistoryList['admin']);
-      //setUserRankList(data.ranks);
+      setUserRankList(data.ranks);
+      setUserHistoryDict(data.leaderboard);
+      console.log(data.leaderboard);
     });
     
     socket.on('login', (data) => {
       setUserList(prevUserList => [...prevUserList, data.user]);
       setUserHistoryList(data.users);
-      //setUserRankList(data.ranks);
+      setUserRankList(data.ranks);
+      setUserHistoryDict(data.leaderboard);
+      console.log(data.leaderboard);
     });
    
     socket.on('update', (data) => {
       console.log(data);
       setPlayers(data);
+    });
+    
+    socket.on('winner', (data) => {
+      setUserHistoryDict(data.leaderboard);
+      console.log(data.leaderboard);
     });
   }, []);
   
@@ -108,7 +130,9 @@ function App() {
       <div>
         <button onClick={() => onShowHide()}>Leaderboard</button>
       </div>
-      {showHide === true ? displayLeaderboard() : null}
+      <div id="here">
+      </div>
+        {showHide === true ? displayLeaderboard() : null}
     </div>
     
   );

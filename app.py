@@ -48,12 +48,16 @@ def on_connect():
     for person in all_people: # DB STUFF
         users.append(person.username) # DB STUFF
         ranks.append(person.rank)
-        #leaderboard[person.username] = person.rank
+        leaderboard[person.username] = person.rank
     current_users = users
-    print("users: ", users) # DB STUFF
-    print("current_users: ", current_users)
-    #print('leader: ', leaderboard)
-    socketio.emit('start', {'users': users, 'ranks':ranks, 'leaderboard':leaderboard}) # DB STUFF
+    #print("users: ", users) # DB STUFF
+    #print("current_users: ", current_users)
+    leaderboardlist = []
+    leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
+    for l in leaderboard_sorted_keys:
+        leaderboardlist.append([l,leaderboard[l]])
+    print('leaderlist: ', leaderboardlist)
+    socketio.emit('start', {'users': users, 'ranks':ranks, 'leaderboard':leaderboardlist}) # DB STUFF
     
 @socketio.on('display')
 def on_display(data): # data is whatever arg you pass in your emit call on client
@@ -66,7 +70,7 @@ def on_display(data): # data is whatever arg you pass in your emit call on clien
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
     global current_users
-    print(str(data))
+    #print(str(data))
     if data['user'] not in current_users:
         print("user not in db")
         new_user = models.Person(username=data['user'], rank=100)
@@ -82,11 +86,15 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     for person in all_people:
         users.append(person.username)
         ranks.append(person.rank)
-        #leaderboard[person.username] = person.rank
-    print('users: ', users)
-    print('current_users: ', current_users)
-    print('leader: ', leaderboard)
-    socketio.emit('login', {'users': users, 'user': data['user'], 'ranks':ranks, 'leaderboard':leaderboard}, broadcast=True, include_self=True)
+        leaderboard[person.username] = person.rank
+    #print('users: ', users)
+    #print('current_users: ', current_users)
+    leaderboardlist = []
+    leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
+    for l in leaderboard_sorted_keys:
+        leaderboardlist.append([l,leaderboard[l]])
+    print('leaderlist: ', leaderboardlist)
+    socketio.emit('login', {'users': users, 'user': data['user'], 'ranks':ranks, 'leaderboard':leaderboardlist}, broadcast=True, include_self=True)
 
 #used to update player information and pass this to all other users
 @socketio.on('update')
@@ -98,6 +106,23 @@ def update_players(data): # data is whatever arg you pass in your emit call on c
 @socketio.on('restart')
 def reset_board(data): # data is whatever arg you pass in your emit call on client
     socketio.emit('restart', data, broadcast=True, include_self=True)
+    
+@socketio.on('winner')
+def update_score(data): # data is whatever arg you pass in your emit call on client
+    winner = db.session.query(models.Person).filter_by(username=data['winner'])
+    for w in winner:
+        w.rank +=1
+        db.session.commit()
+    all_people = models.Person.query.all()
+    leaderboard = {}
+    for person in all_people:
+        leaderboard[person.username] = person.rank
+    leaderboardlist = []
+    leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
+    for l in leaderboard_sorted_keys:
+        leaderboardlist.append([l,leaderboard[l]])
+    print('leaderlist: ', leaderboardlist)
+    socketio.emit('winner', {'leaderboard':leaderboardlist}, broadcast=True, include_self=True)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
