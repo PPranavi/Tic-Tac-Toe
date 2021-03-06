@@ -67,7 +67,7 @@ function App() {
       </div>
     );*/
     return (
-      <div>
+      <div class="table">
         <table>
           <thead>
             <tr>
@@ -75,6 +75,10 @@ function App() {
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td>Username</td>
+              <td>Rank</td>
+            </tr>
             {userHistoryDict.map((item, index) => <DisTable key={index} player={item} />)}
           </tbody>
         </table>
@@ -129,8 +133,6 @@ function App() {
       </div>
       <div>
         <button onClick={() => onShowHide()}>Leaderboard</button>
-      </div>
-      <div id="here">
       </div>
         {showHide === true ? displayLeaderboard() : null}
     </div>
