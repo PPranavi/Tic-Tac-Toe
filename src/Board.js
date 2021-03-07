@@ -64,16 +64,6 @@ export function BoardState(props) {
                 counter++;
         }
         
-        /*if (counter==0) 
-            Onext(true);*/
-        
-        /*if (winner=='X') {
-            socket.emit('winner', { winner: props.players['X']});
-        }
-        else if (winner=='O') {
-            socket.emit('winner', { winner: props.players['O']});
-        }*/
-        
         if (winner || tempBoard[i])
             return;
             

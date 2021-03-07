@@ -90,13 +90,10 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         users.append(person.username)
         ranks.append(person.rank)
         leaderboard[person.username] = person.rank
-    #print('users: ', users)
-    #print('current_users: ', current_users)
     leaderboardlist = []
     leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
     for l in leaderboard_sorted_keys:
         leaderboardlist.append([l,leaderboard[l]])
-    #print('leaderlist: ', leaderboardlist)
     socketio.emit('login', {'users': users, 'user': data['user'], 'ranks':ranks, 'leaderboard':leaderboardlist}, broadcast=True, include_self=True)
 
 #used to update player information and pass this to all other users

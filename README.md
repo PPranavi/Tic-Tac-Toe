@@ -3,7 +3,7 @@ This is a live multiplayer game in the browser - Tic Tac Toe! The goal of this p
 interaction and database persistence. I am using Flask and React to build this game and display consistent information to all users.
 
 ## Heroku App Link
-[Click here to play the game!](https://peaceful-tor-81462.herokuapp.com/)
+[Click here to play the game!](https://immense-woodland-21512.herokuapp.com/)
 
 ## Copy this repo
 1. On your GitHub account, create a new repository
