@@ -46,12 +46,12 @@ export function BoardState(props) {
         const win = claculateWinner(board);
         if (win=='X') {
             console.log("hereX");
-            socket.emit('winner', { winner: props.players['X']});
+            socket.emit('winner', { winner: props.players['X'], loser:props.players['O']});
             return;
         }
         else if (win=='O') {
             console.log("hereO");
-            socket.emit('winner', { winner: props.players['O']});
+            socket.emit('winner', { winner: props.players['O'], loser:props.players['X']});
             return;
         }
     }

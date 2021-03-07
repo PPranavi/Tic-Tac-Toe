@@ -124,6 +124,10 @@ def update_score(data): # data is whatever arg you pass in your emit call on cli
         for w in winner:
             w.rank +=1
             db.session.commit()
+        loser = db.session.query(models.Person).filter_by(username=data['loser'])
+        for l in loser:
+            l.rank -=1
+            db.session.commit()
         all_people = models.Person.query.all()
         leaderboard = {}
         for person in all_people:
