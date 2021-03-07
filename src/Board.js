@@ -42,6 +42,19 @@ export function BoardState(props) {
     const [Xnext, Onext] = useState(true);
     const winner = claculateWinner(board);
     
+    function updateScore() {
+        const win = claculateWinner(board);
+        if (win=='X') {
+            console.log("hereX");
+            socket.emit('winner', { winner: props.players['X']});
+            return;
+        }
+        else if (win=='O') {
+            console.log("hereO");
+            socket.emit('winner', { winner: props.players['O']});
+            return;
+        }
+    }
     //functionality to update board only when player x or player o click on a square
     function clickHandler(i) {
         const tempBoard = [...board];
@@ -54,12 +67,12 @@ export function BoardState(props) {
         /*if (counter==0) 
             Onext(true);*/
         
-        if (winner=='X') {
+        /*if (winner=='X') {
             socket.emit('winner', { winner: props.players['X']});
         }
         else if (winner=='O') {
             socket.emit('winner', { winner: props.players['O']});
-        }
+        }*/
         
         if (winner || tempBoard[i])
             return;
@@ -137,6 +150,7 @@ export function BoardState(props) {
             <div class='h2'> Next Turn: Player {Xnext ? 'X' : 'O'} </div>
             <div>
                 <h1>{winner ? 'Winner: Player ' + winner + '!': ''}</h1>
+                <p>{winner ? updateScore() : ''}</p>
                 <p id='restart'>{winner ? restartGame() : ''}</p>
             </div>
         </div>

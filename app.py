@@ -22,6 +22,7 @@ db.create_all()
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 current_users = []
+updateScore=False
 
 socketio = SocketIO(
     app,
@@ -38,6 +39,8 @@ def index(filename):
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
+    global updateScore
+    updateScore=False
     global current_users
     current_users = []
     print('User connected!')
@@ -56,7 +59,7 @@ def on_connect():
     leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
     for l in leaderboard_sorted_keys:
         leaderboardlist.append([l,leaderboard[l]])
-    print('leaderlist: ', leaderboardlist)
+    #print('leaderlist: ', leaderboardlist)
     socketio.emit('start', {'users': users, 'ranks':ranks, 'leaderboard':leaderboardlist}) # DB STUFF
     
 @socketio.on('display')
@@ -93,7 +96,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
     for l in leaderboard_sorted_keys:
         leaderboardlist.append([l,leaderboard[l]])
-    print('leaderlist: ', leaderboardlist)
+    #print('leaderlist: ', leaderboardlist)
     socketio.emit('login', {'users': users, 'user': data['user'], 'ranks':ranks, 'leaderboard':leaderboardlist}, broadcast=True, include_self=True)
 
 #used to update player information and pass this to all other users
@@ -102,27 +105,36 @@ def update_players(data): # data is whatever arg you pass in your emit call on c
     print("dictionary: ", data)
     socketio.emit('update', data, broadcast=True, include_self=False)
 
+
 #new code
 @socketio.on('restart')
 def reset_board(data): # data is whatever arg you pass in your emit call on client
+    global updateScore
+    updateScore=False
     socketio.emit('restart', data, broadcast=True, include_self=True)
     
+
 @socketio.on('winner')
 def update_score(data): # data is whatever arg you pass in your emit call on client
-    winner = db.session.query(models.Person).filter_by(username=data['winner'])
-    for w in winner:
-        w.rank +=1
-        db.session.commit()
-    all_people = models.Person.query.all()
-    leaderboard = {}
-    for person in all_people:
-        leaderboard[person.username] = person.rank
-    leaderboardlist = []
-    leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
-    for l in leaderboard_sorted_keys:
-        leaderboardlist.append([l,leaderboard[l]])
-    print('leaderlist: ', leaderboardlist)
-    socketio.emit('winner', {'leaderboard':leaderboardlist}, broadcast=True, include_self=True)
+    global updateScore
+    print("winner: ", updateScore)
+    if not updateScore:
+        updateScore=True
+        winner = db.session.query(models.Person).filter_by(username=data['winner'])
+        for w in winner:
+            w.rank +=1
+            db.session.commit()
+        all_people = models.Person.query.all()
+        leaderboard = {}
+        for person in all_people:
+            leaderboard[person.username] = person.rank
+        leaderboardlist = []
+        leaderboard_sorted_keys = sorted(leaderboard, key=leaderboard.get, reverse=True)
+        for l in leaderboard_sorted_keys:
+            leaderboardlist.append([l,leaderboard[l]])
+        print('leaderlist: ', leaderboardlist)
+        
+        socketio.emit('winner', {'leaderboard':leaderboardlist}, broadcast=True, include_self=True)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":

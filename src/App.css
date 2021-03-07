@@ -19,6 +19,11 @@
   color: white;
 }
 
+.highlight {
+  color: red;
+  font-weight: bold;
+}
+
 .center {
   margin: auto;
   width: 50%;

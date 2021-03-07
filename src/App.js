@@ -66,6 +66,7 @@ function App() {
         {userHistoryList.map((item, index) => <ListItem key={index} name={item} />)}
       </div>
     );*/
+    console.log("displaying leaderboard");
     return (
       <div class="table">
         <table>
