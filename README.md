@@ -22,9 +22,32 @@ In your terminal:
 6. `pip install flask-socketio`
 7. `npm install`
 8. `pip install -r requirements.txt`
+9. 
 
 ## Setup
 1. Run `echo "DANGEROUSLY_DISABLE_HOST_CHECK=true" > .env.development.local` in the project directory
+
+## Database Setup
+1. `sudo yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs`
+2. `sudo service postgresql initdb`
+3. `sudo service postgresql start`
+4. `sudo -u postgres createuser --superuser $USER`  If you get an error saying "could not change directory", that's okay! It worked!
+5. `sudo -u postgres createdb $USER` If you get an error saying "could not change directory", that's okay! It worked!
+6. Make a new user:
+a) `psql` (if you already quit out of psql)
+b) Type this with your username and password (DONT JUST COPY PASTE): `create user some_username_here superuser password 'some_unique_new_password_here'`; e.g. create user pranavi superuser password 'mysecretpassword123';
+c) \q to quit out of sql
+7. Save your username and password in a sql.env file with the format SQL_USER= and SQL_PASSWORD=.
+8. To use SQL in Python: pip install psycopg2-binary
+9. pip install Flask-SQLAlchemy==2.1
+
+## Heroku Setup
+1. Create an account on Heroku: [Sign up for a free account](https://signup.heroku.com/login)
+2. Login and fill creds: heroku login -i
+3. Create a new Heroku app: heroku create
+4. Create a new remote DB on your Heroku app: heroku addons:create heroku-postgresql:hobby-dev (If that doesn't work, add a -a {your-app-name} to the end of the command, no braces)
+5. See the config vars set by Heroku for you: heroku config. Copy paste the value for `DATABASE_URL`
+6. Set the value of `DATABASE_URL` as an environment variable by entering this in the terminal: `export DATABASE_URL='copy-paste-value-in-here'` 
 
 ## Run Application
 1. Run command in terminal (in your project directory): `python app.py`
@@ -32,20 +55,17 @@ In your terminal:
 3. Preview web page in browser '/'
 
 ## Heroku Deployment
-1. Create an account on Heroku: [Sign up for a free account](https://signup.heroku.com/login)
-2. Create a `Procfile` in your main directory and add the commands that Heroku needs to use to run your app: `python app.py`
-3. Add and commit all of the files using git
-4. Login got your Herohu account on your terminal: `heroku login -i`
-5. Create a Heroku app: `heroku create --buildpack heroku/python`
-6. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs`
-7. Push all code to Heroku: `git push heroku main`
-8. Go to your [Heroku dashboard](https://dashboard.heroku.com/apps) and open your application's settings
-9. Run your application in you terminal: `heroku open`
+1. Add and commit all of the files using git
+2. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs`
+3. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/python`
+4. Push all code to Heroku: `git push heroku main`
+5. Go to your [Heroku dashboard](https://dashboard.heroku.com/apps) and open your application's settings
+6. Run your application in you terminal: `heroku open`
 
 ## Known Problems
-1. When a player restarts a game, the board is cleared only for that user but not all other users viewing/playing on the website. I attempted to solve this problem but I have yet to figure out a way to emit the board to the server and send it back to the client to display the empty board across all users. This problem still persists because of the way I setup the restartGame function in my code. If I had more time, I would rewrite my function to render the restart button after I emit the empty board to the server side.
-2. If users who are interested in viewing a game or playing the game are not on the borwser by the time the first user enters his/her username, the game will not work as expected. If I had more time, I would emit the users who have already logged on from the client to the server and have the server emit the logged users list to the client for new users who connect to the game.
+1. When there are too many users, the sqlalchemy operation stops working due to too many connections for one user. When I searched the error to this problem, I read that this is an Operational Error that is not neccessarily controlled by the programmer. When SQLAlchemy stops functioning, my leaderboard doesn't work along withe the score update. If I had more time, I would refine my code so that too many retrievals aren't pushed out from the client-server programs, if this is a possible fix to the solution.
+2. Sometimes, Heroku does not update board changes or leaderboard changes fast enough. This may be due to too much traffic on the site but I am not sure what the cause of the problem is. In this case, testing whether my app is functional using the Heroku site might not give you the most transparent results. Thus, it would be best to test the code by downloading the files and running it locally.
 
 ## Technical Issues
-1. I had a hard time working with React because I was running into "too many re-render" errors while working on the code. This error came up often because I had code outside of function blocks in my main export function. I still don't really understand why I could not have code (like if statements, for loops) outside of my helper function code blocks, but after doing some research on stackoverflow and looking at Slack for help, I understood why the error kept coming up. I modified my code so that all of the code was in either helper functions or the return statement and that seemed to fix my problem. 
-2. Socket IO was super interesting when we first learned it in class but it slowly became a pain to use with this game app. Since I didn't know that state variable take a bit of time to update, I attempted to send state variables through the socket and expected all updated data to show up on all browsers. However, this was not the case when I first started working on my code. I worked around this issue by debugging very aggressively. I entered console.log() statements everywhere in my code to see the status of my state variables as well as the server side variables. After debugging this way, I relaized that the state variables were not being updated by the time the code reached the socket emit line. I realized that i had to emit only constant information and that did the trick. At the end of the day, debugging using developer tools and console.log() statements helped me get through the issues I was facing.
+1. I had a really hard time with too many socket emits. In my client side Board.js app, when the winner is idenitfied, I intended to emit the winner's and loser's usernames so tjat the srver could update scores accordingly. However, I saw that the function was emiiting the socket functions repeatedly. I have yet to understand why this was happening, but I did find a solution by adding a flag in my server code. The flag I added ensured that an update ran only once after a winner was identitified in the current game.
+2. I struggled with the leaderboard tabel creation as well. I was not sending my database entries properly to the client because I was attempting to create a table using a dictionary. I found this task to be too difficult to do in javascript. So, I worked around this issue by formatting my database dictionary as an 2D array on my server side before emitting it to the client to be formatted into a table. This seemed to fix the problem and my table was being rendered as expected.
