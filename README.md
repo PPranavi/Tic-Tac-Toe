@@ -5,7 +5,7 @@ interaction and database persistence. I am using Flask and React to build this g
 
 ## Heroku App Link
 
-[Click here to play the game!](https://immense-woodland-21512.herokuapp.com/)
+[Click here to play the game!](https://warm-savannah-21987.herokuapp.com/)
 
 ## Copy this repo
 

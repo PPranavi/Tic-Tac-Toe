@@ -1,4 +1,4 @@
-"extends": ["airbnb", "airbnb/hooks"]
+"extends": ["airbnb", "airbnb/hooks", "prettier"]
 "rules": {
         "react/jsx-filename-extension": [0],
         "import/extensions": "off"
@@ -6,3 +6,11 @@
 "env": {
         "browser": true
 }
+"overrides": [ 
+        {
+               "files": ["src/index.js", "src/reportWebVitals.js", "src/App.test.js"],
+               "rules": {
+                "no-undef": 0
+               }
+        }
+]
