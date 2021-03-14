@@ -130,7 +130,9 @@ function App() {
         Enter your username:
         {' '}
         <input ref={usernameRef} type="text" />
-        <button type="submit" onClick={onSetUsername}>Login</button>
+        <button type="submit" onClick={onSetUsername}>
+          Login
+        </button>
       </div>
       <div>
         <div className="h2">
@@ -148,7 +150,9 @@ function App() {
         </div>
       </div>
       <div>
-        <button type="button" onClick={() => onShowHide()}>Leaderboard</button>
+        <button type="button" onClick={() => onShowHide()}>
+          Leaderboard
+        </button>
       </div>
       {showHide === true ? displayLeaderboard() : null}
     </div>

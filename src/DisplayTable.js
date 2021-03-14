@@ -11,7 +11,9 @@ export function DisTable({ player }) {
 }
 
 DisTable.propTypes = {
-  player: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.sring, PropTypes.number])),
+  player: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.sring, PropTypes.number]),
+  ),
 };
 
 DisTable.defaultProps = {

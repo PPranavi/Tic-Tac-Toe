@@ -4,6 +4,7 @@ database schema
 """
 from app import DB
 
+
 class Person(DB.Model):
     """
     database shcema

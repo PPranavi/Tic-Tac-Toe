@@ -44,5 +44,8 @@
     "eslint-plugin-react-hooks": "^1.7.0",
     "prettier": "2.2.1"
   },
-  "eslintIgnore": ["src/index.js", "src/reportWebVitals.js"]
+  "eslintIgnore": [
+    "src/index.js",
+    "src/reportWebVitals.js"
+  ]
 }

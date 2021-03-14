@@ -61,18 +61,17 @@ In your terminal:
 
 1. In the terminal, run `python` to open an interactive session
 2. One by one, add the following lines:
-`from app import DB`
-`import models`
-`DB.create_all()`
-`admin = models.Person(username='admin', rank=100)`
-`DB.session.add(admin)`
-`DB.session.commit()`
+   `from app import DB`
+   `import models`
+   `DB.create_all()`
+   `admin = models.Person(username='admin', rank=100)`
+   `DB.session.add(admin)`
+   `DB.session.commit()`
 3. To make sure this worked, run the following line in the same interactive session (If you see the admin as a Person entry, then it worked!):
-`models.Person.query.all()`
+   `models.Person.query.all()`
 4. To make sure that this user was added to the Heroku database, connect to it using `heroku pg:psql`
 5. To see all tables, run the command `\d`; the person table should be in there
 6. To query the data in the person table, run the query `SELECT * FROM person;`; the admin user should be in there
-
 
 ## Run Application
 

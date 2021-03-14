@@ -51,7 +51,8 @@ export function BoardState(props) {
         loser: props.players.O,
       });
       return;
-    } if (win === 'O') {
+    }
+    if (win === 'O') {
       // console.log('hereO');
       socket.emit('winner', {
         winner: props.players.O,
@@ -86,7 +87,8 @@ export function BoardState(props) {
       });
       // console.log(props.username);
       return;
-    } if (!Xnext && props.username === props.players.O) {
+    }
+    if (!Xnext && props.username === props.players.O) {
       tempBoard[i] = 'O';
       message = 'O';
       Onext(!Xnext);
@@ -132,13 +134,15 @@ export function BoardState(props) {
                 document.getElementById('showRestartButton').style.display = 'none'; */
     if (
       props.username !== props.players.X
-          && props.username !== props.players.O
+      && props.username !== props.players.O
     ) {
       document.getElementById('restart').style.display = 'none';
     }
     return (
       <div id="showRestartButton">
-        <button type="button" onClick={() => restartButton()}>Restart Game</button>
+        <button type="button" onClick={() => restartButton()}>
+          Restart Game
+        </button>
       </div>
     );
   }
