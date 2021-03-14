@@ -1,10 +1,16 @@
-from app import db
+# pylint: disable=E1101,R0903
+"""
+database schema
+"""
+from app import DB
 
-
-class Person(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    rank = db.Column(db.Integer)
+class Person(DB.Model):
+    """
+    database shcema
+    """
+    id = DB.Column(DB.Integer, primary_key=True)
+    username = DB.Column(DB.String(80), unique=True, nullable=False)
+    rank = DB.Column(DB.Integer)
 
     def __repr__(self):
         return '<Person %r>' % self.username
