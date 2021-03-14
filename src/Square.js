@@ -1,10 +1,18 @@
-import React from "react";
-import "./App.css";
+import React from 'react';
+import './App.css';
+import PropTypes from 'prop-types';
 
-export function SquareState(props) {
+export function SquareState({ onClick, symbol }) {
   return (
-    <button class="box" onClick={props.onClick}>
-      <h3>{props.symbol}</h3>
+    <button type="button" className="box" onClick={onClick}>
+      <h3>{symbol}</h3>
     </button>
   );
 }
+
+SquareState.propTypes = {
+  symbol: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
+
+export const foo = 'foo';

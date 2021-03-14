@@ -23,6 +23,7 @@ db.create_all()
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 current_users = []
+in_game = []
 updateScore = False
 
 socketio = SocketIO(app,
@@ -84,6 +85,9 @@ def on_display(
 def on_login(
         data):  # data is whatever arg you pass in your emit call on client
     global current_users
+    global in_game
+    if data['user'] not in in_game:
+        in_game.append(data['user'])
     #print(str(data))
     if data['user'] not in current_users:
         print("user not in db")
@@ -109,7 +113,7 @@ def on_login(
         leaderboardlist.append([l, leaderboard[l]])
     socketio.emit('login', {
         'users': users,
-        'user': data['user'],
+        'user': in_game,
         'ranks': ranks,
         'leaderboard': leaderboardlist
     },
