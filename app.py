@@ -198,14 +198,14 @@ def update_score(
                       broadcast=True,
                       include_self=True)
 
-test = []
+TEST = []
 def add_player(username):
     """
     runs for mocked unit testing purposes
     """
-    global test
-    if username not in test:
-        test.append(username)
+    global TEST
+    if username not in TEST:
+        TEST.append(username)
         new_user = models.Person(username=username, rank=100)
         DB.session.add(new_user)
         DB.session.commit()
@@ -216,6 +216,7 @@ def add_player(username):
         return users
     else:
         return "(duplicate error)"
+
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
