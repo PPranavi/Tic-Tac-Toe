@@ -214,8 +214,7 @@ def add_player(username):
         for person in all_people:
             users.append(person.username)
         return users
-    else:
-        return "(duplicate error)"
+    return "(duplicate error)"
 
 
 # Note we need to add this line so we can import app in the python shell
