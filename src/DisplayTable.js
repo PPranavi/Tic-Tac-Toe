@@ -12,7 +12,7 @@ export function DisTable({ player }) {
 
 DisTable.propTypes = {
   player: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.sring, PropTypes.number]),
+    PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   ),
 };
 
